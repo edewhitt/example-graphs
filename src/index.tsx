@@ -1,15 +1,19 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
+import { RouterProvider } from 'react-router-dom';
+import router from 'router';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
-root.render(
+const root = document.getElementById('root');
+
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+createRoot(root!).render(
   <React.StrictMode>
-    <App />
+    <div className="container-fluid">
+      <RouterProvider router={router} />
+    </div>
   </React.StrictMode>
 );
 

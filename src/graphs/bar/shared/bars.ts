@@ -1,17 +1,31 @@
-import { Axis, BaseType, NumberValue, ScaleBand, ScaleLinear, Selection, Transition, axisBottom, axisLeft, easeCubicOut } from 'd3';
-import { SVGSelection, Translation, BarColumnLayout } from './helpers';
-import { buildAxisTransitionOutFn, styleAxis, buildAxisTransitionInFn, styleBackgroundBar, styleBar, BAR_STYLES } from './styles';
+import {
+  Axis,
+  BaseType,
+  NumberValue,
+  ScaleBand,
+  ScaleLinear,
+  Selection,
+  Transition,
+  axisBottom,
+  axisLeft,
+  easeCubicOut,
+} from 'd3';
+import { BarColumnLayout, SVGSelection, Translation } from './helpers';
+import {
+  BAR_STYLES,
+  buildAxisTransitionInFn,
+  buildAxisTransitionOutFn,
+  styleAxis,
+  styleBackgroundBar,
+  styleBar,
+} from './styles';
 import { formatTextForElements } from './text';
 
 export const createBarColumns = <T>(
   selection: Selection<BaseType, T, SVGElement, unknown>,
   translation: (record: T) => string
 ): Selection<SVGGElement, T, SVGElement, unknown> => {
-  return selection
-    .enter()
-    .append('g')
-    .attr('class', 'bar-column')
-    .attr('transform', translation);
+  return selection.enter().append('g').attr('class', 'bar-column').attr('transform', translation);
 };
 
 export type BarState<T> = {
@@ -31,7 +45,10 @@ export const createBars = <T>(
   createBarsRects(selection, state).call(styleBar);
 };
 
-export const createBarsRects = <T>(selection: Selection<SVGGElement, T, SVGElement, unknown>, state: Partial<BarState<T>>) => {
+export const createBarsRects = <T>(
+  selection: Selection<SVGGElement, T, SVGElement, unknown>,
+  state: Partial<BarState<T>>
+) => {
   const bars = selection.append('rect');
   applyBarState(bars, state);
   return bars;
@@ -50,9 +67,10 @@ export const updateBarColumns = <T>(
   translationFn: ValueFn<T, string>,
   state: Partial<BarState<T>>,
   backgroundState: Partial<BarState<T>>,
-  existingColumnsSize: number = 0
+  existingColumnsSize = 0
 ) => {
-  const additionalDelay = (existingColumnsSize > 0 ? existingColumnsSize - 1 : existingColumnsSize) * BAR_STYLES.DELAY_FACTOR;
+  const additionalDelay =
+    (existingColumnsSize > 0 ? existingColumnsSize - 1 : existingColumnsSize) * BAR_STYLES.DELAY_FACTOR;
   const transition = selection
     .transition()
     .duration(800)
@@ -70,18 +88,15 @@ export const updateBarColumns = <T>(
 export const buildGroupTranslationFn = <T>(
   xFn: number | ValueFn<T, number>,
   yFn: number | ValueFn<T, number>
-): ValueFn<T, string>  => {
+): ValueFn<T, string> => {
   return (record: T) =>
-    new Translation(
-      getValueFn(xFn).call(this, record),
-      getValueFn(yFn).call(this, record),
-    ).toString();
+    new Translation(getValueFn(xFn).call(this, record), getValueFn(yFn).call(this, record)).toString();
 };
 
 export type ValueFn<T, V> = (_: T) => V;
 
 const getValueFn = <T, V>(input: V | ValueFn<T, V>) => {
-  return Number.isFinite(input) ? (_: T) => (input as V) : (input as ValueFn<T, V>);
+  return Number.isFinite(input) ? (_: T) => input as V : (input as ValueFn<T, V>);
 };
 
 const applyBarState = <T>(
@@ -206,5 +221,5 @@ export const renderValueAxisLeft = (
 };
 
 const formatValueAxis = (axis: Axis<NumberValue>) => {
-  return axis.tickFormat((value) => Number.isInteger(value) ? value.toString() : '');
+  return axis.tickFormat((value) => (Number.isInteger(value) ? value.toString() : ''));
 };

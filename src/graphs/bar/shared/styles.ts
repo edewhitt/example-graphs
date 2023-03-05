@@ -1,6 +1,5 @@
 import type { ScaleBand, Selection } from 'd3';
 import { easeCubicOut } from 'd3';
-import { select } from 'd3-selection';
 
 export const BAR_STYLES = {
   BORDER_RADIUS: 8,
@@ -16,8 +15,8 @@ export type Margins = { top: number; right: number; left: number; bottom: number
 export type SVGSelection = Selection<SVGElement, unknown, null, unknown>;
 
 export const getBandwidth = (scale: ScaleBand<any>) => {
-  return Math.min(scale.bandwidth(), BAR_STYLES.MAX_BAND_WIDTH)
-}
+  return Math.min(scale.bandwidth(), BAR_STYLES.MAX_BAND_WIDTH);
+};
 
 export const buildAxisTransitionInFn = (isResize: boolean) => {
   return (axis: Selection<any, unknown, any, unknown>): void => {
@@ -44,7 +43,7 @@ export const createGradient = (
   parentId: string,
   svg: SVGSelection,
   inputGradient: [string, string] | undefined,
-  isVertical: boolean = true
+  isVertical = true
 ) => {
   svg.selectAll('defs').remove();
   const defs = svg.append('defs');
@@ -77,10 +76,7 @@ export const styleBackgroundBar = <T>(rect: SVGRect<T>): SVGRect<T> => {
 };
 
 export const styleBar = <T>(rect: SVGRect<T>): SVGRect<T> => {
-  return rect
-    .attr('class', 'bar')
-    .attr('rx', BAR_STYLES.BORDER_RADIUS)
-    .attr('ry', BAR_STYLES.BORDER_RADIUS);
+  return rect.attr('class', 'bar').attr('rx', BAR_STYLES.BORDER_RADIUS).attr('ry', BAR_STYLES.BORDER_RADIUS);
 };
 
 export const styleAxis = (axis: Selection<SVGGElement, unknown, null, unknown>): void => {

@@ -1,12 +1,29 @@
-import { BarState, ValueFn, buildGroupTranslationFn, createBarColumns, createBars, renderLabelAxisBottom, renderValueAxisLeft, selectBarColumns, updateBarColumns, removeBarColumns } from '../../shared/bars';
-import { BarColumnLayout, SVGSelection, composeLayout, selectSVG } from "../../shared/helpers";
-import { buildScaleBand, buildScaleBandBySize, buildScaleLinear, ScaleBandBySizeResult, ScaleBandResult } from '../../shared/scales';
-import { createGradient, getBandwidth } from "../../shared/styles";
 import ScaleLinear from 'd3';
+import { BarGraph, BarGraphOptions } from '../../shared';
+import {
+  BarState,
+  ValueFn,
+  buildGroupTranslationFn,
+  createBarColumns,
+  createBars,
+  removeBarColumns,
+  renderLabelAxisBottom,
+  renderValueAxisLeft,
+  selectBarColumns,
+  updateBarColumns,
+} from '../../shared/bars';
+import { BarColumnLayout, SVGSelection, composeLayout, selectSVG } from '../../shared/helpers';
 import { bindMouseEvents } from '../../shared/mouse';
-import { BarGraphOptions, BarGraph } from '../../shared';
+import {
+  ScaleBandBySizeResult,
+  ScaleBandResult,
+  buildScaleBand,
+  buildScaleBandBySize,
+  buildScaleLinear,
+} from '../../shared/scales';
+import { createGradient, getBandwidth } from '../../shared/styles';
 
-export type BarGraphColumn<T> = { getLabel: ValueFn<T, string>, getValue: ValueFn<T, number>, fill: string };
+export type BarGraphColumn<T> = { getLabel: ValueFn<T, string>; getValue: ValueFn<T, number>; fill: string };
 export type MultiColumnBarGraphOptions<T> = Omit<BarGraphOptions<T>, 'getValue'> & { bars: BarGraphColumn<T>[] };
 
 const render = <T>(
@@ -27,7 +44,11 @@ const render = <T>(
   const layout = composeLayout(bounds, options.margins);
 
   const labelScale = buildScaleBand(data, options.getLabel, { range: [0, layout.width] });
-  const columnsScale = buildScaleBandBySize<T>(options.bars.length, (record, index) => options.bars[index].getValue(record).toString(), { range: [0, labelScale.scale.bandwidth()], padding: 0.05 });
+  const columnsScale = buildScaleBandBySize<T>(
+    options.bars.length,
+    (record, index) => options.bars[index].getValue(record).toString(),
+    { range: [0, labelScale.scale.bandwidth()], padding: 0.05 }
+  );
 
   const allValues = data.flatMap((record) => options.bars.map((bar) => bar.getValue(record)));
   const valueScale = buildScaleLinear(allValues, { range: [layout.height, 0] });
@@ -89,10 +110,14 @@ export const renderBars = <T>(input: RenderBarsInput<T>): void => {
 
   const groupTranslationFn = buildGroupTranslationFn(
     (record: SubColumn) => record.xOffset + (input.scales.columns.scale(record.index.toString()) ?? 0),
-    input.layout.margins.top,
+    input.layout.margins.top
   );
 
-  const [initState, finalState, initBackgroundState, finalBackgroundState] = buildBarStates(columnWidth, input.layout, input.scales.values);
+  const [initState, finalState, initBackgroundState, finalBackgroundState] = buildBarStates(
+    columnWidth,
+    input.layout,
+    input.scales.values
+  );
 
   const groups = selectBarColumns(input.svg, allColumns);
 
@@ -100,12 +125,7 @@ export const renderBars = <T>(input: RenderBarsInput<T>): void => {
   removeBarColumns(groups);
 
   // update remaining groups;
-  updateBarColumns(
-    groups,
-    groupTranslationFn,
-    finalState,
-    finalBackgroundState,
-  );
+  updateBarColumns(groups, groupTranslationFn, finalState, finalBackgroundState);
 
   const existingGroupsSize = groups.size();
 
@@ -114,27 +134,25 @@ export const renderBars = <T>(input: RenderBarsInput<T>): void => {
 
   createBars(newGroups, initState, initBackgroundState);
 
-  updateBarColumns(
-    newGroups,
-    groupTranslationFn,
-    finalState,
-    finalBackgroundState,
-    existingGroupsSize
-  );
+  updateBarColumns(newGroups, groupTranslationFn, finalState, finalBackgroundState, existingGroupsSize);
 
-  bindMouseEvents(newGroups, (record) => record.tooltip);
+  bindMouseEvents(input.svg, newGroups, (record) => record.tooltip);
 };
 
-const buildBarStates = (columnWidth: number, layout: BarColumnLayout, scale: ScaleLinear.ScaleLinear<number, number>) => {
+const buildBarStates = (
+  columnWidth: number,
+  layout: BarColumnLayout,
+  scale: ScaleLinear.ScaleLinear<number, number>
+) => {
   const initBackgroundState: Partial<BarState<SubColumn>> = {
     height: 0,
     width: columnWidth,
-    y: scale(0)
+    y: scale(0),
   };
 
   const initState: Partial<BarState<SubColumn>> = {
     ...initBackgroundState,
-    fill: (record) => record.fill
+    fill: (record) => record.fill,
   };
 
   const finalBackgroundState: Partial<BarState<SubColumn>> = {
@@ -147,13 +165,8 @@ const buildBarStates = (columnWidth: number, layout: BarColumnLayout, scale: Sca
   const finalState: Partial<BarState<SubColumn>> = {
     ...initState,
     height: (record) => layout.height - (scale(record.value) ?? 0),
-    y: (record) => (scale(record.value) ?? 0),
+    y: (record) => scale(record.value) ?? 0,
   };
 
-  return [
-    initState,
-    finalState,
-    initBackgroundState,
-    finalBackgroundState,
-  ];
+  return [initState, finalState, initBackgroundState, finalBackgroundState];
 };

@@ -17,15 +17,23 @@ type TSpanState = {
  *
  * @method formatTextForElements
  */
-export const formatTextForElements = (selection: Selection<BaseType, unknown, SVGGElement, unknown>, maxWidth: number, maxLines: number = 2) => {
+export const formatTextForElements = (
+  selection: Selection<BaseType, unknown, SVGGElement, unknown>,
+  maxWidth: number,
+  maxLines = 2
+) => {
   let shouldClearAll = false;
 
-  selection.each(function () { shouldClearAll = shouldClearAll || !wrapLinesForElement(this, maxWidth, maxLines); });
+  selection.each(function () {
+    shouldClearAll = shouldClearAll || !wrapLinesForElement(this, maxWidth, maxLines);
+  });
 
   if (shouldClearAll) {
-    selection.each(function () { select(this).text(null); });
+    selection.each(function () {
+      select(this).text(null);
+    });
   }
-}
+};
 
 const createTSpan = (selection: Selection<BaseType, unknown, null, undefined>, state: TSpanState, text?: string) => {
   const element = selection
@@ -39,8 +47,6 @@ const createTSpan = (selection: Selection<BaseType, unknown, null, undefined>, s
   return element;
 };
 
-
-
 /**
  * Compares the current elements computed text width against the max width available.
  *
@@ -50,7 +56,6 @@ const isValidWidth = (selection: Selection<any, unknown, null, undefined>, maxWi
   const selectedNode = selection.node();
   return selectedNode && selectedNode.getComputedTextLength() < maxWidth;
 };
-
 
 /**
  * Wraps the text of a given element into a series of tspan nodes. Will attempt to break and truncate the final words of the last line.
@@ -90,11 +95,11 @@ const wrapLinesForElement = (element: BaseType, maxWidth: number, maxLines: numb
     currentLine.pop();
     currentLineElement.text(currentLine.join(' '));
 
-    if (currentLineNumber + 1 > (maxLines - 1)) {
+    if (currentLineNumber + 1 > maxLines - 1) {
       const lastwords = [currentLine.pop(), word];
       breakWordForElement(currentLineElement, maxWidth, currentLine, lastwords.join(' '));
       break;
-    };
+    }
 
     currentLineNumber++;
     currentLine = [word];
@@ -104,19 +109,23 @@ const wrapLinesForElement = (element: BaseType, maxWidth: number, maxLines: numb
   return !!currentLineElement.text().length;
 };
 
-
 /**
  * Will attempt to append as much of the last words as possible to the current line. If no words are possible then clears the text for the current element.
  *
  * @method breakWordForElement
  */
-const breakWordForElement = (selection: Selection<any, unknown, null, undefined>, maxWidth: number, words: string[], lastWords: string) => {
+const breakWordForElement = (
+  selection: Selection<any, unknown, null, undefined>,
+  maxWidth: number,
+  words: string[],
+  lastWords: string
+) => {
   const currentLine = [...words];
 
   if (lastWords.length <= 3) {
     selection.text(currentLine + '...');
     return;
-  };
+  }
 
   for (let i = 3; i < lastWords.length; i++) {
     currentLine.push(lastWords.substring(0, i + 1) + (i < lastWords.length - 1 ? '...' : ''));
@@ -127,7 +136,7 @@ const breakWordForElement = (selection: Selection<any, unknown, null, undefined>
 
     if (!isValidWidth(selection, maxWidth)) {
       if (i === 3) {
-        selection.text(null)
+        selection.text(null);
         return;
       }
 

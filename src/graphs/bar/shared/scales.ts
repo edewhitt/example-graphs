@@ -26,10 +26,7 @@ export const buildScaleBand = <T>(
   const domain = data.map(domainFn);
   const options: ScaleOptions = { ...DEFAULT_SCALE_OPTIONS, ...inputOptions };
 
-  const scale = scaleBand()
-    .domain(domain)
-    .range(options.range)
-    .padding(options.padding);
+  const scale = scaleBand().domain(domain).range(options.range).padding(options.padding);
 
   return { scale, toScaled: (record: T) => scale(domainFn(record)) ?? 0 };
 };
@@ -49,10 +46,7 @@ export const buildScaleBandBySize = <T>(
 
   const options: ScaleOptions = { ...DEFAULT_SCALE_OPTIONS, ...inputOptions };
 
-  const scale = scaleBand()
-    .domain(domain)
-    .range(options.range)
-    .padding(options.padding);
+  const scale = scaleBand().domain(domain).range(options.range).padding(options.padding);
 
   return { scale, toScaled: (record: T, index: number) => scale(domainFn(record, index)) ?? 0 };
 };

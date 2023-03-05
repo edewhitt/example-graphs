@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { BaseType, Selection } from 'd3';
+import type { Selection } from 'd3';
 import { select } from 'd3-selection';
 import { Margins } from '.';
 

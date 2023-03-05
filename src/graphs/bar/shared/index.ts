@@ -22,8 +22,8 @@ export abstract class BaseBarGraph<T, R = BarGraphOptions<T>> {
   protected readonly options: R;
 
   protected data: Array<T>;
-  protected height: number = 0;
-  protected width: number = 0;
+  protected height = 0;
+  protected width = 0;
 
   constructor(parentId: string, data: Array<T> | undefined, options: R) {
     this.parentId = parentId;

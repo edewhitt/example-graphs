@@ -1,16 +1,20 @@
+import { BarGraph, BarGraphOptions } from '../shared';
 import {
-  BarColumnLayout,
-  SVGSelection,
-} from '../shared/helpers';
-import {
-  composeLayout,
-  selectSVG,
-} from '../shared/helpers';
+  BarState,
+  ValueFn,
+  buildGroupTranslationFn,
+  createBarColumns,
+  createBars,
+  removeBarColumns,
+  renderLabelAxisBottom,
+  renderValueAxisLeft,
+  selectBarColumns,
+  updateBarColumns,
+} from '../shared/bars';
+import { BarColumnLayout, SVGSelection, composeLayout, selectSVG } from '../shared/helpers';
 import { bindMouseEvents } from '../shared/mouse';
-import { BarState, ValueFn, buildGroupTranslationFn, createBarColumns, createBars, removeBarColumns, renderLabelAxisBottom, renderValueAxisLeft, selectBarColumns, updateBarColumns } from '../shared/bars';
 import { ScaleBandResult, ScaleLinearFromDataResult, buildScaleBand, buildScaleLinearFromData } from '../shared/scales';
 import { createGradient, getBandwidth } from '../shared/styles';
-import { BarGraphOptions, BarGraph } from '../shared';
 
 /**
  * Renders the the x-axis, y-axis, and stylized bars for a vertical-oriented bar graph.
@@ -81,12 +85,20 @@ type RenderBarsInput<T> = {
  */
 export const renderBars = <T>(input: RenderBarsInput<T>): void => {
   const bandWidth = getBandwidth(input.scales.label.scale);
-  const [initState, finalState, initBackgroundState, finalBackgroundState] = buildBarStates(input.parentId, bandWidth, input.layout, input.scales.value.toScaled);
+  const [initState, finalState, initBackgroundState, finalBackgroundState] = buildBarStates(
+    input.parentId,
+    bandWidth,
+    input.layout,
+    input.scales.value.toScaled
+  );
 
   const groups = selectBarColumns(input.svg, input.data);
 
   const groupTranslationFn = buildGroupTranslationFn(
-    (record: T) => input.layout.margins.left + input.scales.label.toScaled(record) + (input.scales.label.scale.bandwidth() - bandWidth) / 2,
+    (record: T) =>
+      input.layout.margins.left +
+      input.scales.label.toScaled(record) +
+      (input.scales.label.scale.bandwidth() - bandWidth) / 2,
     input.layout.margins.top
   );
 
@@ -94,27 +106,20 @@ export const renderBars = <T>(input: RenderBarsInput<T>): void => {
   removeBarColumns(groups);
 
   // update remaining groups;
-  updateBarColumns(
-    groups,
-    groupTranslationFn,
-    finalState,
-    finalBackgroundState,
-  );
+  updateBarColumns(groups, groupTranslationFn, finalState, finalBackgroundState);
 
   // create new groups
   const newGroups = createBarColumns(groups, groupTranslationFn);
 
   createBars(newGroups, initState, initBackgroundState);
 
-  updateBarColumns(
-    newGroups,
-    groupTranslationFn,
-    finalState,
-    finalBackgroundState,
-    groups.size()
-  );
+  updateBarColumns(newGroups, groupTranslationFn, finalState, finalBackgroundState, groups.size());
 
-  bindMouseEvents(newGroups, (record) => `${input.options.getLabel(record)}: ${input.options.getValue(record)}`);
+  bindMouseEvents(
+    input.svg,
+    newGroups,
+    (record) => `${input.options.getLabel(record)}: ${input.options.getValue(record)}`
+  );
 };
 
 const buildBarStates = <T>(
@@ -130,7 +135,7 @@ const buildBarStates = <T>(
   };
   const initState: Partial<BarState<T>> = {
     ...initBackgroundState,
-    fill: `url(#${parentId}-bar-gradient)`
+    fill: `url(#${parentId}-bar-gradient)`,
   };
 
   const finalBackgroundState: Partial<BarState<T>> = {
@@ -145,10 +150,5 @@ const buildBarStates = <T>(
     y: valueFn,
   };
 
-  return [
-    initState,
-    finalState,
-    initBackgroundState,
-    finalBackgroundState,
-  ];
+  return [initState, finalState, initBackgroundState, finalBackgroundState];
 };
