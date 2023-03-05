@@ -22,7 +22,7 @@ export class Translation {
 
 const DEFAULT_AXIS_PADDING = 20;
 
-const DEFAULT_MARGINS: Margins = { top: 50, right: 50, bottom: 50, left: 50 };
+const DEFAULT_MARGINS: Margins = { top: 25, right: 50, bottom: 50, left: 50 };
 
 // layout
 

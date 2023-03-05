@@ -1,11 +1,11 @@
 import React from 'react';
+import BarsPage from 'pages/bars';
 import { createBrowserRouter } from 'react-router-dom';
-import BarGraphComponent from 'graphs';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <BarGraphComponent />,
+    element: <BarsPage />,
   },
 ]);
 

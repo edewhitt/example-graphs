@@ -3,14 +3,16 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
 import router from 'router';
-import './index.css';
+import './styles/index.scss';
 import reportWebVitals from './reportWebVitals';
+import Navigation from 'shared/components/navigation';
 
 const root = document.getElementById('root');
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 createRoot(root!).render(
   <React.StrictMode>
+    <Navigation />
     <div className="container-fluid">
       <RouterProvider router={router} />
     </div>
