@@ -33,8 +33,8 @@ const render = <T>(
 
   const layout = composeLayout(bounds, options.margins);
 
-  const labelScale = buildScaleBand(data, options.getLabel, { range: [0, layout.width] });
-  const valueScale = buildScaleLinearFromData(data, options.getValue, { range: [0, layout.height] });
+  const labelScale = buildScaleBand(data, options.getLabel, { range: [0, layout.height] });
+  const valueScale = buildScaleLinearFromData(data, options.getValue, { range: [0, layout.width] });
 
   renderLabelAxisLeft(svg, labelScale.scale, layout, isResize);
   renderValueAxisBottom(svg, valueScale.scale, layout, isResize);
